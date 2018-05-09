@@ -1,42 +1,72 @@
 <!DOCTYPE html>
 <html>
-<body>
-
-
+    <body>
         
-<div id="wrapper">       
-    <input id="fileUpload" type="file"><br />
-    
-    <p>Image to use:</p>
-    <img id="scream" width="220" height="277" src="./agua.jpeg" alt="The Scream">
-</div>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script> -->
+
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+
+    <form id="global" method=post action="http://104.236.251.107/" enctype=multipart/form-data id="image">
+        <input id="file" type=file name=file accept="image/*">
+        <button>Enviar</button>
+    </form>
+
+
+<button id="vai">Vai</button>
+
+<p>Image to use:</p>
+<img id="scream" width="220" height="277" alt="The Scream">
             
 <p>Canvas:</p>
 <canvas id="myCanvas" width="600" height="800" style="border:1px solid #d3d3d3;">
 Your browser does not support the HTML5 canvas tag.
 </canvas>
 
-
-<script
-  src="https://code.jquery.com/jquery-3.3.1.min.js"
-  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-  crossorigin="anonymous"></script>
-
 <script>
 
-$("#fileUpload").on('change', function () {
- 
-    if (typeof (FileReader) != "undefined") {
- 
+
+$("#vai").click(up)
+
+function up(){
+    $.ajax({
+        type: "POST",
+        url: 'http://104.236.251.107/',
+        data: new FormData($('#global')[0]),
+        processData: false,
+        contentType: false,
+        success: function (data) {
+           console.log(data);
+           canvas(data.description,data.vertices)
+        }
+    });
+}
+
+function changeImage(){
+        if (typeof (FileReader) != "undefined") {
+
         var image_holder = $("#scream");
         image_holder.empty();
- 
+
         var reader = new FileReader();
         reader.onload = function (e) {
-            // $("<img />", {
-            //     "src": e.target.result,
-            //     "class": "thumb-image"
-            // }).appendTo(image_holder);
+            $("#scream").attr("src", e.target.result);
+        }
+        image_holder.show();
+        reader.readAsDataURL($(this)[0].files[0]);
+    } else{
+        alert("Este navegador nao suporta FileReader.");
+    }
+}
+
+$("#file").on('change', function () {
+    
+    if (typeof (FileReader) != "undefined") {
+
+        var image_holder = $("#scream");
+        image_holder.empty();
+
+        var reader = new FileReader();
+        reader.onload = function (e) {
             $("#scream").attr("src", e.target.result);
         }
         image_holder.show();
@@ -46,42 +76,50 @@ $("#fileUpload").on('change', function () {
     }
 });
 
-window.onload = function() {
+
+function canvas(name, vertices) {
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
     var img = document.getElementById("scream");
-
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.beginPath();
     ctx.drawImage(img, 0, 0, 600, 800);
     
-    ctx.fillStyle = "red";
-    
-    // ctx.fillText("Hello World",10,50);
+    ctx.fillStyle = "yellow";
     
     ctx.font = "18px Arial";
     ctx.textAlign = "center";
     
-    // ctx.fillText("Hello World", c.width/2, c.height/7);
-    
-    ctx.fillText("Hello World", 335, 290);    
+    ctx.fillText(name, vertices[1].x-2, vertices[1].y-4);    
     
     ctx.lineWidth="4";
-    // ctx.rect(50, 20, 150, 100);
-    // ctx.rect(50, 20, c.width/1.7, c.height/1.1);
-    // ctx.rect(50, 20, c.width/rd1, c.height/rd2);
     
-    ctx.strokeStyle="red";
+    ctx.strokeStyle="yellow";
 
-    var x1 = 269;
-    var y1 = 294;
+    // var x1 = 269;
+    // var y1 = 294;
 
-    var x2 = 335;
-    var y2 = 294;
+    // var x2 = 335;
+    // var y2 = 294;
 
-    var x3 = 335;
-    var y3 = 327;
+    // var x3 = 335;
+    // var y3 = 327;
 
-    var x4 = 269;
-    var y4 = 327;
+    // var x4 = 269;
+    // var y4 = 327;
+
+    var x1 = vertices[0].x;
+    var y1 = vertices[0].y;
+
+    var x2 = vertices[1].x;
+    var y2 = vertices[1].y;
+
+    var x3 = vertices[2].x;
+    var y3 = vertices[2].y;
+
+    var x4 = vertices[3].x;
+    var y4 = vertices[3].y;
 
     // ctx.moveTo(269,294);
     ctx.moveTo(x1,y2);
@@ -95,20 +133,15 @@ window.onload = function() {
 
     ctx.moveTo(x1-1,y1-1);
 
-    // ctx.lineTo(269,327);
     ctx.lineTo(x4,y4);
     
-
-    
     ctx.stroke();
-    // ctx.moveTo(111,100);
-    //ctx.moveTo(0,0);
-    // ctx.lineTo(0,100);
+ 
 }
-</script>
 
-<p><strong>Note:</strong> The canvas tag is not supported in Internet 
-Explorer 8 and earlier versions.</p>
+
+
+</script>
 
 </body>
 </html>
